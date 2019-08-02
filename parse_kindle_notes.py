@@ -1,0 +1,106 @@
+# -*- coding: utf-8 -*-
+import json, sys, codecs
+
+class Note:
+    def __init__(self, book_name, time_stamp, location, note_content):
+        self.book_name = book_name
+        self.time_stamp = time_stamp
+        self.location = location
+        self.note_content = note_content
+
+def write_json_to_file(content, dest_file="data.json"):
+    with open(dest_file, 'w') as outfile:
+        json.dump(content, outfile)
+
+def parse_kindle_note(file_path):
+    with codecs.open(file_path, "r", encoding="utf-8-sig") as file: #avoid codecs.BOM_UTF8 '\xef\xbb\xbf' in first line
+        f1 = file.readlines()
+
+        line_number = 0
+        note = Note("", "", "", "")
+        book_notes = []
+        current_line = 0
+        for x in f1:
+            current_line += 1
+            line_number += 1
+            if line_number == 1:
+                note.book_name = x
+            elif line_number == 2:
+                try:
+                    note.location = x.split("|")[0].strip()
+                    note.time_stamp = x.split("|")[1].strip()
+                except Exception as ex:
+                    print("Error: Incorrect note format found in Line Number #{}, the content is:".format(current_line))
+                    print(x)
+                    exit()
+            elif line_number == 4:
+                note.note_content += x
+            elif line_number == 5:
+                line_number = 0
+                book_notes.append(note)
+                note = Note("", "", "", "")
+        return book_notes
+
+def _transform_notes_to_json(book_notes):
+    """
+    book_notes are a list of Note objects:
+        class Note:
+            def __init__(self, book_name, time_stamp, location, note_content):
+                self.book_name = book_name
+                self.time_stamp = time_stamp
+                self.location = location
+                self.note_content = note_content
+    """
+    book_list = []
+
+    data = {}
+    data["title"] = "Kindle Notes and Highlights"
+    data["contents"] = []
+
+    print("Total Number of Notes are {}".format(len(book_notes)))
+    for note in book_notes:
+        # Build a note dictionary for this note
+        note_dic = {}
+        note_dic["location"] = note.location.strip()
+        note_dic["timestamp"] = note.time_stamp.replace("\r\n","")
+        note_dic["note"] = note.note_content.replace("\r\n","")
+        if note.book_name.strip() not in book_list:
+            book_list.append(note.book_name.strip())
+            # Build a note collection for this new book
+            note_book1 = {}
+            note_book1["bookName"] = note.book_name.replace("\r\n","")
+            note_book1["notes"] = []
+            # Append this note dictionary to its book collection
+            note_book1["notes"].append(note_dic)
+            # Append this book collection to root data
+            data["contents"].append(note_book1)
+        else:
+            for book_collection in data["contents"]:
+                if book_collection["bookName"] == note.book_name.replace("\r\n",""):
+                    book_collection["notes"].append(note_dic)
+    print("There are {} books in total ".format(len(book_list)))
+    return data
+
+def raise_message():
+    print("Error: Please specify a valid file path!")
+    print("Pattern: python parse_kindle_notes.py SOURCE_FILE_PATH [TARGET_FILE_PATH]")
+    print("Sample Usage: python parse_kindle_notes.py '/usrs/xxx/desktop/My Clippings.txt'")
+    exit()
+if __name__ == "__main__":
+    SOURCE_FILE_PATH = ""
+    TARGET_FILE_PATH = ""
+    try:
+        SOURCE_FILE_PATH = sys.argv[1]
+    except Exception as error:
+        raise_message()
+    try:
+        TARGET_FILE_PATH = sys.argv[2]
+    except Exception as error:
+        TARGET_FILE_PATH = "data.json"
+    if SOURCE_FILE_PATH == "":
+        raise_message()
+
+    book_notes = parse_kindle_note(SOURCE_FILE_PATH)
+    data = _transform_notes_to_json(book_notes=book_notes)
+    write_json_to_file(content=data, dest_file=TARGET_FILE_PATH)
+    
