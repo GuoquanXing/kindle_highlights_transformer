@@ -5,8 +5,7 @@ def write_json_to_file(content, dest_file="data.json"):
         json.dump(content, outfile)
 
 def _create_folder_in_cwd(folder_name):
-    path = os.getcwd()
-    path_new = path + "/" + folder_name
+    path_new = os.path.join(os.getcwd(), folder_name)
     if not os.path.exists(path_new):
         os.mkdir(path_new)
     return path_new

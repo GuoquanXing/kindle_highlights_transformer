@@ -1,7 +1,6 @@
 import sys
 
-from parse_kindle_notes import transform_notes_to_json
-from write_file_to_disk import write_json_to_file_per_book, write_json_to_file
+import parser, filemaker
 
 def _raise_message():
     print("Error: Please specify a valid file path!")
@@ -25,9 +24,9 @@ if __name__ == "__main__":
     if SOURCE_FILE_PATH == "":
         _raise_message()
         
-    data = transform_notes_to_json(source_file_path=SOURCE_FILE_PATH)
+    data = parser.transform_notes_to_json(source_file_path=SOURCE_FILE_PATH)
     # write_json_to_file(content=data, dest_file=TARGET_FILE_PATH)
     if MULTIPLE_FILE:
-        write_json_to_file_per_book(data)
+        filemaker.write_json_to_file_per_book(data)
     else:
-        write_json_to_file(content=data)
+        filemaker.write_json_to_file(content=data)

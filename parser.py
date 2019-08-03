@@ -49,32 +49,36 @@ def transform_notes_to_json(source_file_path):
     print("There are {} books in total ".format(len(book_list)))
     return data
 
-def _parse_kindle_note(file_path):
+def _read_file_in_lines(file_path):
     with codecs.open(file_path, "r", encoding="utf-8-sig") as file: #avoid codecs.BOM_UTF8 '\xef\xbb\xbf' in first line
         f1 = file.readlines()
+        return f1
 
-        line_number = 0
-        note = Note("", "", "", "")
-        book_notes = []
-        current_line = 0
-        for x in f1:
-            current_line += 1
-            line_number += 1
-            if line_number == 1:
-                note.book_name = x
-            elif line_number == 2:
-                try:
-                    note.location = x.split("|")[0].strip()
-                    note.time_stamp = x.split("|")[1].strip()
-                except Exception as ex:
-                    _raise_incorrect_format(current_line=current_line, line_content=x)
-            elif line_number == 4:
-                note.note_content += x
-            elif line_number == 5:
-                line_number = 0
-                book_notes.append(note)
-                note = Note("", "", "", "")
-        return book_notes
+def _parse_kindle_note(file_path):
+    f1 = _read_file_in_lines(file_path)
+
+    line_number = 0
+    note = Note("", "", "", "")
+    book_notes = []
+    current_line = 0
+    for x in f1:
+        current_line += 1
+        line_number += 1
+        if line_number == 1:
+            note.book_name = x
+        elif line_number == 2:
+            try:
+                note.location = x.split("|")[0].strip()
+                note.time_stamp = x.split("|")[1].strip()
+            except Exception as ex:
+                _raise_incorrect_format(current_line=current_line, line_content=x)
+        elif line_number == 4:
+            note.note_content += x
+        elif line_number == 5:
+            line_number = 0
+            book_notes.append(note)
+            note = Note("", "", "", "")
+    return book_notes
 
 def _raise_incorrect_format(current_line, line_content):
     print("Error: Incorrect note format found in Line Number #{}, the content is:".format(current_line))
