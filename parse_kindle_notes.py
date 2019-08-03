@@ -18,7 +18,7 @@ def transform_notes_to_json(source_file_path):
                 self.location = location
                 self.note_content = note_content
     """
-    book_notes = _parse_kindle_note(SOURCE_FILE_PATH)
+    book_notes = _parse_kindle_note(source_file_path)
     book_list = []
 
     data = {}
@@ -48,10 +48,6 @@ def transform_notes_to_json(source_file_path):
                     book_collection["notes"].append(note_dic)
     print("There are {} books in total ".format(len(book_list)))
     return data
-
-def write_json_to_file(content, dest_file="data.json"):
-    with open(dest_file, 'w') as outfile:
-        json.dump(content, outfile)
 
 def _parse_kindle_note(file_path):
     with codecs.open(file_path, "r", encoding="utf-8-sig") as file: #avoid codecs.BOM_UTF8 '\xef\xbb\xbf' in first line
@@ -84,26 +80,7 @@ def _raise_incorrect_format(current_line, line_content):
     print("Error: Incorrect note format found in Line Number #{}, the content is:".format(current_line))
     print(line_content)
     exit()
-
-def _raise_message():
-    print("Error: Please specify a valid file path!")
-    print("Pattern: python parse_kindle_notes.py SOURCE_FILE_PATH [TARGET_FILE_PATH]")
-    print("Sample Usage: python parse_kindle_notes.py '/usrs/xxx/desktop/My Clippings.txt'")
-    exit()
     
-if __name__ == "__main__":
-    SOURCE_FILE_PATH = ""
-    TARGET_FILE_PATH = ""
-    try:
-        SOURCE_FILE_PATH = sys.argv[1]
-    except Exception as error:
-        _raise_message()
-    try:
-        TARGET_FILE_PATH = sys.argv[2]
-    except Exception as error:
-        TARGET_FILE_PATH = "data.json"
-    if SOURCE_FILE_PATH == "":
-        _raise_message()
 
-    data = transform_notes_to_json(source_file_path=SOURCE_FILE_PATH)
-    write_json_to_file(content=data, dest_file=TARGET_FILE_PATH)
+
+    

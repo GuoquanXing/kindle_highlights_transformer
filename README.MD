@@ -1,17 +1,19 @@
 # Introduction
 
-This script helps transform highlights and notes file `My Clippings.txt` exported from your kindle to a json file and save it as `data.json` at your current folder by default.
+This script helps transform highlights and notes file `My Clippings.txt` exported from your kindle to a json file and save it per book with name `[bookName].json` to folder `[YOUR_CWD]/data` under your current working directory by default. 
+
+You can use parameter `--together` to save it in one unified file `data.json` under your current working directory.
 
 ## Usage
 
 **Python 2.x is not supported, please use python 3.x instead.**
 
-`python3 parse_kindle_ntoes.py 'FILE_PATH' [TARGET_PATH]`
+`python3 main.py 'FILE_PATH' [--together]`
 
 ## Sample
 
-Below is a sample transformed JSON file:
-```JSON
+Below is a sample transformed JSON file `data.json`:
+```Json
 {
     "contents": [{
             "bookName": "围城 (钱钟书)",
@@ -43,5 +45,38 @@ Below is a sample transformed JSON file:
         }
     ],
     "title": "Kindle Notes and Highlights"
+}
+```
+
+Yet another sample file `古都 (川端康成).json`:
+```Json
+{
+    "bookName": "古都 (川端康成)",
+    "notes": [{
+            "note": "也许凡人都是弃儿，因为出生本身仿佛就是上帝把你遗弃到这个人世间来的嘛。”",
+            "timestamp": "添加于 2018年6月7日星期四 下午10:38:17",
+            "location": "- 您在位置 #143-143的标注"
+        },
+        {
+            "note": "",
+            "timestamp": "添加于 2018年6月7日星期四 下午11:23:35",
+            "location": "- 您在位置 #575 的书签"
+        },
+        {
+            "note": "",
+            "timestamp": "添加于 2018年6月10日星期日 下午10:43:48",
+            "location": "- 您在位置 #1182 的书签"
+        },
+        {
+            "note": "“千重子，其实我也并不是喜欢胡枝子白花，任何一种花，每每由于赏花的时间和地点各异，而使人的感触也",
+            "timestamp": "添加于 2018年6月12日星期二 下午10:18:13",
+            "location": "- 您在位置 #1247-1248的标注"
+        },
+        {
+            "note": "“千重子，其实我也并不是喜欢胡枝子白花，任何一种花，每每由于赏花的时间和地点各异，而使人的感触也各有不同。”",
+            "timestamp": "添加于 2018年6月12日星期二 下午10:18:21",
+            "location": "- 您在位置 #1247-1248的标注"
+        }
+    ]
 }
 ```
